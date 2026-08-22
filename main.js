@@ -45,7 +45,6 @@ const lerp = (a, b, t) => a + (b - a) * t;
   if (!box || !word) { document.body.classList.add("is-ready"); heroIntro(); return; }
 
   const WORD = "SOMETHING";
-  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&*";
   const STEP = 118;                       // ms between letters
   const timers = [];
   const after = (ms, fn) => timers.push(setTimeout(fn, ms));
@@ -60,7 +59,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
     b.textContent = ch;
     s.appendChild(b);
     word.appendChild(s);
-    return { el: s, glyph: b, ch };
+    return s;
   });
 
   let done = false;
@@ -69,6 +68,8 @@ const lerp = (a, b, t) => a + (b - a) * t;
     if (done) return;
     done = true;
     timers.forEach(clearTimeout);
+    // whatever is still pending, the word leaves the screen complete
+    letters.forEach(l => l.classList.add("is-arm", "is-on"));
     box.classList.add("is-out", "is-wipe");
     document.body.classList.remove("is-locked");
     document.body.classList.add("is-ready");
@@ -83,7 +84,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
   /* reduced motion: show the word, then get out of the way */
   if (reduced) {
-    letters.forEach(l => l.el.classList.add("is-on"));
+    letters.forEach(l => l.classList.add("is-arm", "is-on"));
     box.classList.add("is-live", "is-tight");
     count.textContent = "100";
     after(700, end);
@@ -102,24 +103,13 @@ const lerp = (a, b, t) => a + (b - a) * t;
     if (k < 1) requestAnimationFrame(tickCount);
   })();
 
-  /* each cell stamps down as a white block, lifts, and the glyph
-     cycles through a few random characters before it settles */
+  /* each cell stamps down as a white block, then lifts off the glyph.
+     The glyph itself is never substituted — whatever the machine's frame
+     rate, the only thing that can ever be on screen is SOMETHING. */
   letters.forEach((l, i) => {
     const at = 460 + i * STEP;
-    after(at, () => l.el.classList.add("is-arm"));
-    after(at + 130, () => {
-      l.el.classList.add("is-on");
-      let n = 0;
-      const roll = setInterval(() => {
-        if (n++ > 3 || done) {
-          clearInterval(roll);
-          l.glyph.textContent = l.ch;
-          return;
-        }
-        l.glyph.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-      }, 46);
-      timers.push(roll);
-    });
+    after(at, () => l.classList.add("is-arm"));
+    after(at + 130, () => l.classList.add("is-on"));
   });
 
   /* kern collapse, flash, tear */

@@ -17,8 +17,10 @@ A full-screen title sequence runs on load, roughly three seconds:
 
 1. hairline rules open above and below the stage, corner type fades up
 2. **SOMETHING** lands one letter at a time — each cell stamps down as a solid
-   white block, lifts away, and the glyph rolls through a few random characters
-   before it settles
+   white block, then the block lifts away and the letter slides up into place.
+   Glyphs are never substituted, so no frame rate and no interruption can put
+   anything other than SOMETHING on screen; skipping the intro snaps the word
+   complete before it exits.
 3. the tracking collapses to its final kerning and `$SOMETHING` fades in
 4. two hard white flashes, then the screen tears open in eight vertical bars
    that lift away to reveal the hero
