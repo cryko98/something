@@ -386,7 +386,7 @@ $$(".acc__q").forEach(q => {
     const f = document.createElement("iframe");
     f.src = `https://www.youtube-nocookie.com/embed/${box.dataset.video}?start=${box.dataset.start || 0}&autoplay=1&rel=0&modestbranding=1&playsinline=1`;
     f.title = "Something Coin — origin story";
-    f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     f.allowFullscreen = true;
     facade.remove();
     box.appendChild(f);
