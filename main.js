@@ -35,38 +35,101 @@ const lerp = (a, b, t) => a + (b - a) * t;
 })();
 
 /* ------------------------------------------------------------
-   PRELOADER
+   INTRO — the word lands one letter at a time, then the
+   screen tears open in vertical bars.
 ------------------------------------------------------------ */
-(function preloader () {
-  const loader = $("#loader");
-  const fill   = $("#loaderFill");
-  const count  = $("#loaderCount");
-  if (!loader) return;
+(function intro () {
+  const box   = $("#intro");
+  const word  = $("#introWord");
+  const count = $("#introCount");
+  if (!box || !word) { document.body.classList.add("is-ready"); heroIntro(); return; }
 
-  let p = 0, done = false;
-  const finish = () => {
+  const WORD = "SOMETHING";
+  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&*";
+  const STEP = 118;                       // ms between letters
+  const timers = [];
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  document.body.classList.add("is-locked");
+
+  /* build the letters */
+  const letters = [...WORD].map(ch => {
+    const s = document.createElement("span");
+    s.className = "ltr";
+    const b = document.createElement("b");
+    b.textContent = ch;
+    s.appendChild(b);
+    word.appendChild(s);
+    return { el: s, glyph: b, ch };
+  });
+
+  let done = false;
+
+  function end () {
     if (done) return;
     done = true;
-    loader.classList.add("is-done");
+    timers.forEach(clearTimeout);
+    box.classList.add("is-out", "is-wipe");
+    document.body.classList.remove("is-locked");
     document.body.classList.add("is-ready");
-    setTimeout(() => loader.classList.add("is-gone"), 1300);
     heroIntro();
-  };
+    setTimeout(() => box.classList.add("is-gone"), 1700);
+  }
 
-  const tick = () => {
-    p += Math.random() * 9 + 2.5;
-    if (p >= 100) p = 100;
-    fill.style.width = p + "%";
-    count.textContent = Math.floor(p);
-    if (p < 100) setTimeout(tick, 60 + Math.random() * 90);
-    else setTimeout(finish, 380);
-  };
+  /* skip on click or any key */
+  const skip = () => { if (!done) { box.classList.add("is-flash"); setTimeout(end, 120); } };
+  box.addEventListener("click", skip);
+  addEventListener("keydown", skip, { once: true });
 
-  if (reduced) { fill.style.width = "100%"; count.textContent = "100"; setTimeout(finish, 200); }
-  else setTimeout(tick, 200);
+  /* reduced motion: show the word, then get out of the way */
+  if (reduced) {
+    letters.forEach(l => l.el.classList.add("is-on"));
+    box.classList.add("is-live", "is-tight");
+    count.textContent = "100";
+    after(700, end);
+    return;
+  }
 
-  // hard failsafe
-  setTimeout(finish, 6000);
+  requestAnimationFrame(() => box.classList.add("is-live"));
+
+  /* counter runs alongside the letters */
+  const total = 460 + letters.length * STEP;
+  const t0 = performance.now();
+  (function tickCount (t) {
+    if (done) return;
+    const k = Math.min(((t || t0) - t0) / total, 1);
+    count.textContent = String(Math.round(k * 100)).padStart(3, "0");
+    if (k < 1) requestAnimationFrame(tickCount);
+  })();
+
+  /* each cell stamps down as a white block, lifts, and the glyph
+     cycles through a few random characters before it settles */
+  letters.forEach((l, i) => {
+    const at = 460 + i * STEP;
+    after(at, () => l.el.classList.add("is-arm"));
+    after(at + 130, () => {
+      l.el.classList.add("is-on");
+      let n = 0;
+      const roll = setInterval(() => {
+        if (n++ > 3 || done) {
+          clearInterval(roll);
+          l.glyph.textContent = l.ch;
+          return;
+        }
+        l.glyph.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      }, 46);
+      timers.push(roll);
+    });
+  });
+
+  /* kern collapse, flash, tear */
+  const settled = 460 + letters.length * STEP + 420;
+  after(settled, () => box.classList.add("is-tight"));
+  after(settled + 980, () => box.classList.add("is-flash"));
+  after(settled + 1120, end);
+
+  /* hard failsafe */
+  setTimeout(end, 9000);
 })();
 
 /* ------------------------------------------------------------

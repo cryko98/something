@@ -6,10 +6,26 @@ Static site: no build step, no dependencies to install. Deploys to Vercel as-is.
 ```
 index.html    markup
 styles.css    all styling (black & white system)
-main.js       preloader, cursor, reveals, counters, copy, FAQ, video facade
+main.js       intro, cursor, reveals, counters, copy, FAQ, video facade
 coin.js       three.js 3D coin (drag to spin) with a CSS fallback
 logo.jpg      logo + favicon source
 ```
+
+## The intro
+
+A full-screen title sequence runs on load, roughly three seconds:
+
+1. hairline rules open above and below the stage, corner type fades up
+2. **SOMETHING** lands one letter at a time — each cell stamps down as a solid
+   white block, lifts away, and the glyph rolls through a few random characters
+   before it settles
+3. the tracking collapses to its final kerning and `$SOMETHING` fades in
+4. two hard white flashes, then the screen tears open in eight vertical bars
+   that lift away to reveal the hero
+
+Click or press any key to skip it. Timing lives in `STEP` at the top of the
+`intro()` block in `main.js`; reduced-motion visitors get the finished word and
+a quick cut instead.
 
 ## Things to fill in before launch
 

@@ -31,15 +31,32 @@
 </head>
 <body>
 
-<!-- ============ PRELOADER ============ -->
-<div class="loader" id="loader">
-  <div class="loader__inner">
-    <div class="loader__mark"><img src="logo.jpg" alt="" /></div>
-    <div class="loader__label">Something&nbsp;Coin</div>
-    <div class="loader__bar"><span id="loaderFill"></span></div>
-    <div class="loader__count"><span id="loaderCount">0</span><i>%</i></div>
+<!-- ============ INTRO ============ -->
+<div class="intro" id="intro">
+  <div class="intro__bars" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
   </div>
-  <div class="loader__curtain"></div>
+
+  <div class="intro__hud" aria-hidden="true">
+    <span>Something Coin</span>
+    <span>Solana / SPL</span>
+  </div>
+
+  <div class="intro__stage">
+    <span class="intro__rule intro__rule--t" aria-hidden="true"></span>
+    <h1 class="intro__word" id="introWord" aria-label="Something"></h1>
+    <span class="intro__rule intro__rule--b" aria-hidden="true"></span>
+    <div class="intro__sub" id="introSub" aria-hidden="true">
+      <span>$SOMETHING</span><em></em><span>It started as a jab</span>
+    </div>
+  </div>
+
+  <div class="intro__foot" aria-hidden="true">
+    <span class="intro__skip" id="introSkip">Click to skip</span>
+    <span class="intro__count"><i id="introCount">000</i></span>
+  </div>
+
+  <div class="intro__flash" id="introFlash" aria-hidden="true"></div>
 </div>
 
 <!-- ============ FIXED LAYERS ============ -->
