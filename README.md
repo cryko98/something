@@ -35,14 +35,20 @@ Everything editable lives at the top of **`main.js`**:
 
 ```js
 const CONFIG = {
-  X_URL: "",                                   // e.g. "https://x.com/somethingcoin"
-  CONTRACT: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"    // the Solana mint address
+  X_URL: "https://x.com/_somethingcoin",
+  BUY_URL: "https://pump.fun/coin/9zf2…pump?utm_source=terminal",
+  CONTRACT: "9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump"
 };
 ```
 
-- `X_URL` — while it is empty, every X link is inert and marked "Coming soon".
-  Set it once and all three links (nav, CTA, footer) update.
+- `X_URL` — every X link (nav, CTA, footer). Empty leaves them inert and marked
+  "Coming soon".
+- `BUY_URL` — every Buy button (nav, hero, buy section, CTA), opened in a new
+  tab. Empty makes them scroll to the How to Buy section instead.
 - `CONTRACT` — fills both contract boxes and the copy-to-clipboard buttons.
+
+The same values are also written into `index.html`, so the page still shows the
+real address and links with JavaScript disabled. Change both when they change.
 
 ## The 3D coin
 

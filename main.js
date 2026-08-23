@@ -5,6 +5,7 @@
    ============================================================ */
 const CONFIG = {
   X_URL: "https://x.com/_somethingcoin",
+  BUY_URL: "https://pump.fun/coin/9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump?utm_source=terminal",
   CONTRACT: "9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump"
 };
 /* ========================================================== */
@@ -19,16 +20,26 @@ const lerp = (a, b, t) => a + (b - a) * t;
    CONFIG APPLY
 ------------------------------------------------------------ */
 (function applyConfig () {
-  $$(".x-link").forEach(a => {
-    if (CONFIG.X_URL) {
-      a.href = CONFIG.X_URL;
-    } else {
-      a.href = "#";
-      a.setAttribute("aria-disabled", "true");
-      a.title = "Coming soon";
-      a.addEventListener("click", e => e.preventDefault());
+  // With a URL configured the link goes out to it in a new tab; without one it
+  // falls back — the buy buttons still scroll to the instructions, the X links
+  // go inert until the account exists.
+  const link = (sel, url, fallback, inert) => $$(sel).forEach(a => {
+    if (url) {
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      return;
     }
+    a.href = fallback;
+    a.removeAttribute("target");
+    if (!inert) return;
+    a.setAttribute("aria-disabled", "true");
+    a.title = "Coming soon";
+    a.addEventListener("click", e => e.preventDefault());
   });
+
+  link(".x-link", CONFIG.X_URL, "#", true);
+  link(".buy-link", CONFIG.BUY_URL, "#buy", false);
   $$("[data-ca]").forEach(el => { el.textContent = CONFIG.CONTRACT; });
   const y = $("#year");
   if (y) y.textContent = new Date().getFullYear();

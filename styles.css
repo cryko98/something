@@ -567,6 +567,15 @@ body.is-ready .cursor{opacity:1}
 .step h3{margin:0 0 10px;font-family:var(--serif);font-weight:400;font-size:clamp(22px,2.6vw,32px);letter-spacing:-.015em}
 .step p{margin:0;color:var(--fg-3);font-size:14.5px;line-height:1.72;font-weight:300;max-width:44ch}
 
+.buy__go{
+  display:flex;flex-wrap:wrap;align-items:center;gap:18px;
+  margin-top:clamp(20px,2.6vw,30px)
+}
+.buy__note{
+  font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--fg-3)
+}
+
 /* ============================================================
    FAQ
    ============================================================ */
