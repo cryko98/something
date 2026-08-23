@@ -5,7 +5,7 @@
    ============================================================ */
 const CONFIG = {
   X_URL: "",                                   // e.g. "https://x.com/somethingcoin"
-  CONTRACT: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"    // paste the Solana mint address here
+  CONTRACT: "9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump"
 };
 /* ========================================================== */
 
