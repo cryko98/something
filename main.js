@@ -4,7 +4,7 @@
    EDIT THESE TWO LINES WHEN THE LINKS GO LIVE:
    ============================================================ */
 const CONFIG = {
-  X_URL: "",                                   // e.g. "https://x.com/somethingcoin"
+  X_URL: "https://x.com/_somethingcoin",
   CONTRACT: "9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump"
 };
 /* ========================================================== */
