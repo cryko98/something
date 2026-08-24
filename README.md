@@ -1,6 +1,6 @@
 # Something Coin — $SOMETHING
 
-Premium monochrome landing page for **Something Coin**, an SPL token on Solana.
+Premium monochrome landing page for **Something Coin**, an ERC-20 token on Base.
 Static site: no build step, no dependencies to install. Deploys to Vercel as-is.
 
 ```
@@ -36,8 +36,8 @@ Everything editable lives at the top of **`main.js`**:
 ```js
 const CONFIG = {
   X_URL: "https://x.com/_somethingcoin",
-  BUY_URL: "https://pump.fun/coin/9zf2…pump?utm_source=terminal",
-  CONTRACT: "9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump"
+  BUY_URL: "https://app.uniswap.org/explore/tokens/base/0xb200…c301",
+  CONTRACT: "0xb200000000000000000000268115e19679e2c301"
 };
 ```
 
@@ -45,6 +45,8 @@ const CONFIG = {
   "Coming soon".
 - `BUY_URL` — every Buy button (nav, hero, buy section, CTA), opened in a new
   tab. Empty makes them scroll to the How to Buy section instead.
+  **Currently a generic Uniswap-on-Base token page — swap it for the real
+  launch venue if the token trades somewhere else.**
 - `CONTRACT` — fills both contract boxes and the copy-to-clipboard buttons.
 
 The same values are also written into `index.html`, so the page still shows the

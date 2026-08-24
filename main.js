@@ -5,8 +5,8 @@
    ============================================================ */
 const CONFIG = {
   X_URL: "https://x.com/_somethingcoin",
-  BUY_URL: "https://pump.fun/coin/9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump?utm_source=terminal",
-  CONTRACT: "9zf2YUAP68RbRu2mwstpmYb3d73rySCj5K3FfYDTpump"
+  BUY_URL: "https://app.uniswap.org/explore/tokens/base/0xb200000000000000000000268115e19679e2c301",
+  CONTRACT: "0xb200000000000000000000268115e19679e2c301"
 };
 /* ========================================================== */
 
