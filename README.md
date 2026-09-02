@@ -34,13 +34,13 @@ Everything editable lives at the top of **`main.js`**:
 ```js
 const CONFIG = {
   X_URL: "https://x.com/somethingonhood",
-  BUY_URL: "",        // token page / DEX link — empty: Buy scrolls to the steps
+  BUY_URL: "https://www.ponsfamily.com/launchpad/0x12f1e2…8a0",
   CONTRACT: "0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0"
 };
 ```
 
 - `X_URL` — every X link (nav, buy section, CTA, footer).
-- `BUY_URL` — every Buy button. While it is empty they scroll to How to Buy
+- `BUY_URL` — every Buy button, opened in a new tab. If it is ever emptied they scroll to How to Buy
   instead of linking out.
 - `CONTRACT` — if it is ever emptied, both contract boxes read **coming soon**, the
   copy buttons are disabled and a live dot pulses in place of the copy icon.
