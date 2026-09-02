@@ -1,12 +1,12 @@
 /* ============================================================
-   SOMETHING COIN — main.js
+   something. — main.js
    ------------------------------------------------------------
-   EDIT THESE TWO LINES WHEN THE LINKS GO LIVE:
+   EDIT THESE THREE LINES AS THE LAUNCH GOES LIVE:
    ============================================================ */
 const CONFIG = {
-  X_URL: "https://x.com/_somethingcoin",
-  BUY_URL: "https://app.uniswap.org/explore/tokens/base/0xb200000000000000000000268115e19679e2c301",
-  CONTRACT: "0xb200000000000000000000268115e19679e2c301"
+  X_URL: "https://x.com/somethingonhood",
+  BUY_URL: "",        // token page / DEX link — empty: Buy scrolls to the steps
+  CONTRACT: ""        // Base mint address — empty: both boxes read "coming soon"
 };
 /* ========================================================== */
 
@@ -40,7 +40,18 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
   link(".x-link", CONFIG.X_URL, "#", true);
   link(".buy-link", CONFIG.BUY_URL, "#buy", false);
-  $$("[data-ca]").forEach(el => { el.textContent = CONFIG.CONTRACT; });
+
+  // No contract yet: the boxes say so and stop pretending to be copyable.
+  const pending = !CONFIG.CONTRACT;
+  $$("[data-ca]").forEach(el => { el.textContent = CONFIG.CONTRACT || "coming soon"; });
+  $$(".ca").forEach(box => {
+    box.classList.toggle("is-pending", pending);
+    const btn = box.querySelector(".ca__value");
+    if (!btn) return;
+    btn.disabled = pending;
+    btn.title = pending ? "Contract not live yet" : "Copy contract address";
+  });
+
   const y = $("#year");
   if (y) y.textContent = new Date().getFullYear();
 })();
@@ -55,7 +66,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
   const count = $("#introCount");
   if (!box || !word) { document.body.classList.add("is-ready"); heroIntro(); return; }
 
-  const WORD = "SOMETHING";
+  const WORD = "something.";
   const STEP = 118;                       // ms between letters
   const timers = [];
   const after = (ms, fn) => timers.push(setTimeout(fn, ms));
@@ -143,7 +154,7 @@ $$("[data-split]").forEach(el => {
     const s = document.createElement("span");
     s.className = "char";
     s.textContent = ch === " " ? " " : ch;
-    s.style.transform = "translateY(110%) rotate(6deg)";
+    s.style.transform = "translateY(150%) rotate(6deg)";
     s.style.opacity = "0";
     el.appendChild(s);
   });
@@ -224,7 +235,7 @@ if (!coarse) {
       if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${p.z * .3})`;
+      ctx.fillStyle = `rgba(0,0,0,${p.z * .22})`;
       ctx.fill();
     }
     requestAnimationFrame(frame);
@@ -401,6 +412,7 @@ if (!coarse && !reduced) {
   $$("[data-copy]").forEach(btn => {
     btn.addEventListener("click", async () => {
       const value = CONFIG.CONTRACT;
+      if (!value) return;                       // nothing to copy until it is live
       try {
         await navigator.clipboard.writeText(value);
       } catch {

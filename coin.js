@@ -1,6 +1,6 @@
 /* ============================================================
    SOMETHING COIN — coin.js
-   A real 3D coin: black body, white mark, drag to spin.
+   A real 3D coin: black body, acid mark, drag to spin.
    Falls back to a flat CSS coin if WebGL / three.js is absent.
    ============================================================ */
 
@@ -20,6 +20,9 @@ if (mount && canvas) {
 
 function boot(THREE) {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ACID = "#c0f913";
+  const WORD = "something.";
+  const FACE_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
   /* ---------- renderer ---------- */
   const renderer = new THREE.WebGLRenderer({
@@ -69,12 +72,13 @@ function boot(THREE) {
   scene.environment = env;
 
   /* ---------- face texture from logo.jpg ---------- */
+  // The mark, struck into the face: black field, acid wordmark.
   function faceTexture() {
     const S = 1024;
     const c = document.createElement("canvas");
     c.width = c.height = S;
     const x = c.getContext("2d");
-    x.fillStyle = "#000"; x.fillRect(0, 0, S, S);
+
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -83,14 +87,36 @@ function boot(THREE) {
     tex.center.set(0.5, 0.5);
     tex.rotation = Math.PI / 2;
 
-    const img = new Image();
-    img.onload = () => {
-      const k = 1.06;                       // overscan: keep the black disc past the cap edge
-      const side = S * k;
-      x.drawImage(img, (S - side) / 2, (S - side) / 2, side, side);
+    const draw = () => {
+      x.fillStyle = "#000";
+      x.fillRect(0, 0, S, S);
+
+      x.fillStyle = ACID;
+      x.textAlign = "center";
+      x.textBaseline = "middle";
+      // fit the word to ~72% of the cap so it clears the rim on both sides
+      let size = 170;
+      x.font = `700 ${size}px ${FACE_FONT}`;
+      const target = S * 0.72;
+      size = Math.round(size * target / x.measureText(WORD).width);
+      x.font = `700 ${size}px ${FACE_FONT}`;
+      x.fillText(WORD, S / 2, S / 2);
+
+      // hairline rules above and below, echoing the intro
+      x.strokeStyle = "rgba(192,249,19,.34)";
+      x.lineWidth = 3;
+      const w = target * 0.86, y = size * 0.72;
+      x.beginPath();
+      x.moveTo((S - w) / 2, S / 2 - y); x.lineTo((S + w) / 2, S / 2 - y);
+      x.moveTo((S - w) / 2, S / 2 + y); x.lineTo((S + w) / 2, S / 2 + y);
+      x.stroke();
+
       tex.needsUpdate = true;
     };
-    img.src = "logo.jpg";
+
+    draw();
+    // redraw once webfonts settle, in case the stack fell back while loading
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
     return tex;
   }
 
@@ -124,14 +150,16 @@ function boot(THREE) {
     envMapIntensity: 1.35
   });
 
+  // Lower metalness than the rim so the acid mark stays a flat, loud green
+  // instead of turning into polished metal.
   const faceMat = () => new THREE.MeshPhysicalMaterial({
     map: faceTexture(),
     color: 0xffffff,
-    metalness: 0.72,
-    roughness: 0.26,
+    metalness: 0.15,
+    roughness: 0.42,
     clearcoat: 1,
-    clearcoatRoughness: 0.12,
-    envMapIntensity: 1.15
+    clearcoatRoughness: 0.1,
+    envMapIntensity: 0.85
   });
 
   // CylinderGeometry material order: [side, top, bottom]

@@ -1,71 +1,77 @@
 # Something Coin — $SOMETHING
 
-Premium monochrome landing page for **Something Coin**, an ERC-20 token on Base.
+Landing page for **Something Coin**, ticker **$SOMETHING**, launching on **Robinhood**.
 Static site: no build step, no dependencies to install. Deploys to Vercel as-is.
 
 ```
-index.html    markup
-styles.css    all styling (black & white system)
-main.js       intro, cursor, reveals, counters, copy, FAQ, video facade
-coin.js       three.js 3D coin (drag to spin) with a CSS fallback
-logo.jpg      logo + favicon source
+index.html      markup
+styles.css      the acid/ink design system
+main.js         intro, cursor, reveals, counters, copy, FAQ, video facade
+coin.js         three.js 3D coin (drag to spin) with a CSS fallback
+newlogo.jpg     source logo — acid disc, white $
+favicon.png     the logo clipped to a transparent circle (256px)
+icon-512.png    same, 512px, used as the apple-touch-icon
+og.png          1200x630 social card
+logo.jpg        the previous black/white logo, kept for reference
 ```
 
-## The intro
+## Design
 
-A full-screen title sequence runs on load, roughly three seconds:
+Acid green `#c0f913` and ink black, sampled straight from the logo. The wordmark
+is lowercase `something.` set in Helvetica/Arial Bold with tight tracking — it is
+the logo, so it appears at every scale: the intro, the hero, the coin faces and
+the giant footer word.
 
-1. hairline rules open above and below the stage, corner type fades up
-2. **SOMETHING** lands one letter at a time — each cell stamps down as a solid
-   white block, then the block lifts away and the letter slides up into place.
-   Glyphs are never substituted, so no frame rate and no interruption can put
-   anything other than SOMETHING on screen; skipping the intro snaps the word
-   complete before it exits.
-3. the tracking collapses to its final kerning and `$SOMETHING` fades in
-4. two hard white flashes, then the screen tears open in eight vertical bars
-   that lift away to reveal the hero
+Every component is written against `--bg` / `--fg` / `--line` custom properties,
+so adding `.inv` to a section flips it to acid-on-black with nothing else to
+change. The video section, the CTA and the footer use it, which gives the page
+its light/dark rhythm.
 
-Click or press any key to skip it. Timing lives in `STEP` at the top of the
-`intro()` block in `main.js`; reduced-motion visitors get the finished word and
-a quick cut instead.
-
-## Things to fill in before launch
+## Things to fill in
 
 Everything editable lives at the top of **`main.js`**:
 
 ```js
 const CONFIG = {
-  X_URL: "https://x.com/_somethingcoin",
-  BUY_URL: "https://app.uniswap.org/explore/tokens/base/0xb200…c301",
-  CONTRACT: "0xb200000000000000000000268115e19679e2c301"
+  X_URL: "https://x.com/somethingonhood",
+  BUY_URL: "",        // token page / DEX link — empty: Buy scrolls to the steps
+  CONTRACT: ""        // mint address — empty: both boxes read "coming soon"
 };
 ```
 
-- `X_URL` — every X link (nav, CTA, footer). Empty leaves them inert and marked
-  "Coming soon".
-- `BUY_URL` — every Buy button (nav, hero, buy section, CTA), opened in a new
-  tab. Empty makes them scroll to the How to Buy section instead.
-  **Currently a generic Uniswap-on-Base token page — swap it for the real
-  launch venue if the token trades somewhere else.**
-- `CONTRACT` — fills both contract boxes and the copy-to-clipboard buttons.
+- `X_URL` — every X link (nav, buy section, CTA, footer).
+- `BUY_URL` — every Buy button. While it is empty they scroll to How to Buy
+  instead of linking out.
+- `CONTRACT` — while it is empty, both contract boxes read **coming soon**, the
+  copy buttons are disabled and a live dot pulses in place of the copy icon.
+  Fill it in and the boxes become real, copyable addresses with no other change.
 
-The same values are also written into `index.html`, so the page still shows the
-real address and links with JavaScript disabled. Change both when they change.
+The same values are also written into `index.html` so the page still works with
+JavaScript disabled. Change both when they change.
+
+## The intro
+
+A full-screen title sequence runs on load, roughly three seconds: black field,
+hairline rules, then **something.** lands one letter at a time — each cell stamps
+down as a solid acid block, lifts away, and the letter slides up behind it.
+Glyphs are never substituted, so nothing but the wordmark can ever be on screen.
+The tracking then collapses, the screen flashes, and eight vertical bars tear
+upward to reveal the acid page underneath.
+
+Click or press any key to skip. Timing is the `STEP` constant in the `intro()`
+block; reduced-motion visitors get the finished word and a quick cut.
 
 ## The 3D coin
 
-`coin.js` builds a real cylinder in three.js (loaded from jsDelivr via an import map),
-textures both faces from `logo.jpg`, and gives the edge a reeded bump map.
-
-- drag to spin, release for inertia
-- click or tap for a flick, double-click for a hard spin
-- it settles back into a slow idle rotation
-- if WebGL or the CDN is unavailable it falls back to a flat rotating logo
+`coin.js` builds a cylinder in three.js (loaded from jsDelivr via an import map),
+draws the wordmark onto both faces on a canvas, and gives the edge a reeded bump
+map. Drag to spin, release for inertia, click for a flick, double-click for a
+hard spin; it settles back to a slow idle rotation. If WebGL or the CDN is
+unavailable it falls back to a flat rotating disc.
 
 ## Local preview
 
 Needs a real HTTP server — `coin.js` is an ES module, so `file://` will not work.
-Any static server does, for example:
 
 ```bash
 npx serve .
