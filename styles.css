@@ -342,7 +342,9 @@ body.is-ready .cursor{opacity:1}
   mask-image:radial-gradient(80% 70% at 50% 45%,#000,transparent 85%);
   -webkit-mask-image:radial-gradient(80% 70% at 50% 45%,#000,transparent 85%)
 }
-.hero__inner{max-width:680px}
+/* width:100% is required — as an inline-size container it cannot take its
+   width from its contents, and the stacked layout justifies items to start */
+.hero__inner{width:100%;max-width:680px;container-type:inline-size}
 
 .hero__eyebrow{
   display:inline-flex;align-items:center;gap:10px;
@@ -352,9 +354,13 @@ body.is-ready .cursor{opacity:1}
 .hero__eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--ink);animation:pulse 2.4s var(--ease) infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.28}}
 
+/* "something." measures 4.78em wide, so the type is sized off the column it
+   sits in (not the viewport) — otherwise the wordmark breaks across two lines
+   on desktop, where the column is capped at 680px but the font is not. */
 .hero__title{
   margin:0 0 26px;font-family:var(--display);font-weight:700;text-transform:lowercase;
-  font-size:clamp(56px,11.4vw,168px);line-height:.86;letter-spacing:-.055em
+  font-size:clamp(48px,19.5cqw,168px);line-height:.86;letter-spacing:-.055em;
+  white-space:nowrap
 }
 /* the mask has to clear the descenders of a lowercase wordmark */
 .hero__title .line{display:block;overflow:hidden;padding-bottom:.22em;margin-bottom:-.17em}
@@ -629,7 +635,7 @@ body.is-ready .cursor{opacity:1}
 .footer__word{
   margin:clamp(38px,6vw,70px) 0 0;text-align:center;line-height:.92;
   font-family:var(--display);font-weight:700;text-transform:lowercase;
-  font-size:clamp(58px,17.5vw,270px);letter-spacing:-.06em;
+  font-size:clamp(46px,16vw,240px);letter-spacing:-.06em;white-space:nowrap;
   user-select:none;pointer-events:none
 }
 

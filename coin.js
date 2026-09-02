@@ -1,6 +1,6 @@
 /* ============================================================
    SOMETHING COIN — coin.js
-   A real 3D coin: black body, acid mark, drag to spin.
+   A real 3D coin: polished acid metal, black wordmark, drag to spin.
    Falls back to a flat CSS coin if WebGL / three.js is absent.
    ============================================================ */
 
@@ -20,7 +20,8 @@ if (mount && canvas) {
 
 function boot(THREE) {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ACID = "#c0f913";
+  const ACID_HEX = 0xc0f913;
+  const FACE_GREEN = "#b4ee0a";   // a shade under the page, so the coin separates
   const WORD = "something.";
   const FACE_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
@@ -33,7 +34,7 @@ function boot(THREE) {
   });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 0.95;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -45,11 +46,13 @@ function boot(THREE) {
     const c = document.createElement("canvas");
     c.width = 512; c.height = 256;
     const x = c.getContext("2d");
+    // the lower half is a green bounce, not black — the coin sits on an acid
+    // page, and a black floor turned the metal rim muddy along its bottom edge
     const g = x.createLinearGradient(0, 0, 0, 256);
     g.addColorStop(0.00, "#ffffff");
-    g.addColorStop(0.35, "#8a8a8a");
-    g.addColorStop(0.52, "#151515");
-    g.addColorStop(1.00, "#000000");
+    g.addColorStop(0.35, "#c8c8c8");
+    g.addColorStop(0.52, "#7d8a3c");
+    g.addColorStop(1.00, "#54710c");
     x.fillStyle = g; x.fillRect(0, 0, 512, 256);
     // soft key + rim highlights so the black body catches light
     const blob = (cx, cy, r, a) => {
@@ -71,8 +74,10 @@ function boot(THREE) {
   })();
   scene.environment = env;
 
-  /* ---------- face texture from logo.jpg ---------- */
-  // The mark, struck into the face: black field, acid wordmark.
+  /* ---------- face texture ---------- */
+  // The mark struck into the inset face: acid field, black wordmark.
+  // Both faces use it as-is — turning the back disc 180° about Y already
+  // brings its local +x back around to world +x once the coin is flipped.
   function faceTexture() {
     const S = 1024;
     const c = document.createElement("canvas");
@@ -82,34 +87,20 @@ function boot(THREE) {
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    // Cylinder cap UVs run 90° off from the screen axes on both ends —
-    // one quarter turn puts the mark upright on the front and the back.
-    tex.center.set(0.5, 0.5);
-    tex.rotation = Math.PI / 2;
 
     const draw = () => {
-      x.fillStyle = "#000";
+      x.fillStyle = FACE_GREEN;
       x.fillRect(0, 0, S, S);
 
-      x.fillStyle = ACID;
+      x.fillStyle = "#000";
       x.textAlign = "center";
       x.textBaseline = "middle";
-      // fit the word to ~72% of the cap so it clears the rim on both sides
+      // fit the word to ~76% of the disc so it clears the bezel on both sides
       let size = 170;
       x.font = `700 ${size}px ${FACE_FONT}`;
-      const target = S * 0.72;
-      size = Math.round(size * target / x.measureText(WORD).width);
+      size = Math.round(size * (S * 0.76) / x.measureText(WORD).width);
       x.font = `700 ${size}px ${FACE_FONT}`;
       x.fillText(WORD, S / 2, S / 2);
-
-      // hairline rules above and below, echoing the intro
-      x.strokeStyle = "rgba(192,249,19,.34)";
-      x.lineWidth = 3;
-      const w = target * 0.86, y = size * 0.72;
-      x.beginPath();
-      x.moveTo((S - w) / 2, S / 2 - y); x.lineTo((S + w) / 2, S / 2 - y);
-      x.moveTo((S - w) / 2, S / 2 + y); x.lineTo((S + w) / 2, S / 2 + y);
-      x.stroke();
 
       tex.needsUpdate = true;
     };
@@ -134,36 +125,70 @@ function boot(THREE) {
     return t;
   })();
 
-  /* ---------- coin ---------- */
-  const R = 1, H = 0.13;
+  /* ---------- coin ----------
+     A polished acid-metal blank with the faces inset slightly, so the ring
+     left over between the disc and the edge reads as a raised bezel. */
+  const R = 1, H = 0.19, FACE_R = 0.87;
   const geo = new THREE.CylinderGeometry(R, R, H, 160, 1, false);
   geo.rotateX(Math.PI / 2);                 // faces look at the camera
 
-  const bodyMat = new THREE.MeshPhysicalMaterial({
-    color: 0x0d0d0d,
-    metalness: 0.95,
-    roughness: 0.28,
+  // the milled edge
+  const edgeMat = new THREE.MeshPhysicalMaterial({
+    color: ACID_HEX,
+    metalness: 1,
+    roughness: 0.34,
     clearcoat: 1,
-    clearcoatRoughness: 0.18,
+    clearcoatRoughness: 0.22,
     bumpMap: edgeBump,
-    bumpScale: 0.012,
+    bumpScale: 0.016,
+    envMapIntensity: 1.5
+  });
+
+  // the bezel ring: the most polished surface on the coin, so it throws the
+  // hard highlights that separate it from the page behind
+  const bezelMat = new THREE.MeshPhysicalMaterial({
+    color: ACID_HEX,
+    metalness: 1,
+    roughness: 0.1,
+    clearcoat: 1,
+    clearcoatRoughness: 0.04,
     envMapIntensity: 1.35
   });
 
-  // Lower metalness than the rim so the acid mark stays a flat, loud green
-  // instead of turning into polished metal.
-  const faceMat = () => new THREE.MeshPhysicalMaterial({
-    map: faceTexture(),
-    color: 0xffffff,
-    metalness: 0.15,
-    roughness: 0.42,
-    clearcoat: 1,
-    clearcoatRoughness: 0.1,
-    envMapIntensity: 0.85
-  });
-
   // CylinderGeometry material order: [side, top, bottom]
-  const coin = new THREE.Mesh(geo, [bodyMat, faceMat(), faceMat()]);
+  const blank = new THREE.Mesh(geo, [edgeMat, bezelMat, bezelMat]);
+
+  // the flat struck faces, sunk just below the bezel
+  const faceGeo = new THREE.CircleGeometry(FACE_R, 128);
+  // Mostly self-lit. A purely diffuse face went olive wherever the studio
+  // fell off, and the brand green has to hold across the whole disc; the
+  // emissive map carries the colour, the thin clearcoat keeps it from
+  // looking like flat vector art.
+  const faceMat = () => {
+    const tex = faceTexture();
+    return new THREE.MeshPhysicalMaterial({
+      color: 0x000000,        // kill diffuse entirely...
+      emissive: 0xffffff,     // ...so the emissive map alone sets the colour
+      emissiveMap: tex,
+      emissiveIntensity: 1,
+      metalness: 0,
+      roughness: 0.62,
+      clearcoat: 0.12,        // any more and the sheen greys out the wordmark
+      clearcoatRoughness: 0.36,
+      envMapIntensity: 0.05
+    });
+  };
+
+  // sat just proud of the cap: what is left of the cap outside FACE_R is the bezel
+  const front = new THREE.Mesh(faceGeo, faceMat());
+  front.position.z = H / 2 + 0.002;
+
+  const back = new THREE.Mesh(faceGeo, faceMat());
+  back.position.z = -(H / 2 + 0.002);
+  back.rotation.y = Math.PI;
+
+  const coin = new THREE.Group();
+  coin.add(blank, front, back);
 
   const group = new THREE.Group();
   group.add(coin);
@@ -171,18 +196,20 @@ function boot(THREE) {
   scene.add(group);
   window.__coin = group;
 
-  /* ---------- lights ---------- */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  /* ---------- lights ----------
+     Kept low: the metal rim takes its brightness from the environment map,
+     while these would land on the diffuse face and bleach the green. */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-  const key = new THREE.DirectionalLight(0xffffff, 3.4);
+  const key = new THREE.DirectionalLight(0xffffff, 1.3);
   key.position.set(-2.4, 3.0, 3.2);
   scene.add(key);
 
-  const rim = new THREE.DirectionalLight(0xffffff, 2.6);
+  const rim = new THREE.DirectionalLight(0xffffff, 1.4);
   rim.position.set(3.0, -1.4, -2.2);
   scene.add(rim);
 
-  const fill = new THREE.DirectionalLight(0xffffff, 1.1);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.45);
   fill.position.set(2.2, 1.2, 2.4);
   scene.add(fill);
 
