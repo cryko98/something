@@ -35,14 +35,14 @@ Everything editable lives at the top of **`main.js`**:
 const CONFIG = {
   X_URL: "https://x.com/somethingonhood",
   BUY_URL: "",        // token page / DEX link — empty: Buy scrolls to the steps
-  CONTRACT: ""        // mint address — empty: both boxes read "coming soon"
+  CONTRACT: "0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0"
 };
 ```
 
 - `X_URL` — every X link (nav, buy section, CTA, footer).
 - `BUY_URL` — every Buy button. While it is empty they scroll to How to Buy
   instead of linking out.
-- `CONTRACT` — while it is empty, both contract boxes read **coming soon**, the
+- `CONTRACT` — if it is ever emptied, both contract boxes read **coming soon**, the
   copy buttons are disabled and a live dot pulses in place of the copy icon.
   Fill it in and the boxes become real, copyable addresses with no other change.
 

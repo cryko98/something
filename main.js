@@ -6,7 +6,7 @@
 const CONFIG = {
   X_URL: "https://x.com/somethingonhood",
   BUY_URL: "",        // token page / DEX link — empty: Buy scrolls to the steps
-  CONTRACT: ""        // Base mint address — empty: both boxes read "coming soon"
+  CONTRACT: "0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0"
 };
 /* ========================================================== */
 
