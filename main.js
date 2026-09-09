@@ -5,8 +5,8 @@
    ============================================================ */
 const CONFIG = {
   X_URL: "https://x.com/somethingonhood",
-  BUY_URL: "https://www.ponsfamily.com/launchpad/0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0",
-  CONTRACT: ""        // mint address — empty: both boxes read "coming soon"
+  BUY_URL: "https://www.ponsfamily.com/launchpad/0x59da048bbfcefb98609d588dbf4fa64d171acfd6",
+  CONTRACT: "0x59da048bbfcefb98609d588dbf4fa64d171acfd6"
 };
 /* ========================================================== */
 

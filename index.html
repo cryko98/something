@@ -10,14 +10,24 @@
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 
+<!-- Absolute URLs, because several scrapers (Telegram among them) will not
+     resolve a relative og:image. The ?v= is a cache buster: previews are keyed
+     on the image URL, so bump it whenever og.png is regenerated. -->
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content="Something Coin" />
+<meta property="og:url" content="https://www.thesomethingcoin.fun/" />
 <meta property="og:title" content="Something Coin — $SOMETHING" />
 <meta property="og:description" content="It started as a jab. It became something. $SOMETHING on Robinhood." />
-<meta property="og:image" content="og.png" />
+<meta property="og:image" content="https://www.thesomethingcoin.fun/og.png?v=3" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="something. — the Something Coin mark" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Something Coin — $SOMETHING" />
 <meta name="twitter:description" content="It started as a jab. It became something. $SOMETHING on Robinhood." />
-<meta name="twitter:image" content="og.png" />
+<meta name="twitter:image" content="https://www.thesomethingcoin.fun/og.png?v=3" />
+<meta name="twitter:image:alt" content="something. — the Something Coin mark" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -87,7 +97,7 @@
     <a class="icon-btn x-link" href="https://x.com/somethingonhood" target="_blank" rel="noopener" aria-label="Follow on X" data-magnetic>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
     </a>
-    <a class="btn btn--solid buy-link" href="https://www.ponsfamily.com/launchpad/0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0" target="_blank" rel="noopener" data-magnetic><span>Buy $SOMETHING</span></a>
+    <a class="btn btn--solid buy-link" href="https://www.ponsfamily.com/launchpad/0x59da048bbfcefb98609d588dbf4fa64d171acfd6" target="_blank" rel="noopener" data-magnetic><span>Buy $SOMETHING</span></a>
     <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
   </div>
 </header>
@@ -114,14 +124,14 @@
     </p>
 
     <div class="hero__cta reveal">
-      <a class="btn btn--solid btn--lg buy-link" href="https://www.ponsfamily.com/launchpad/0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0" target="_blank" rel="noopener" data-magnetic><span>Buy $SOMETHING</span></a>
+      <a class="btn btn--solid btn--lg buy-link" href="https://www.ponsfamily.com/launchpad/0x59da048bbfcefb98609d588dbf4fa64d171acfd6" target="_blank" rel="noopener" data-magnetic><span>Buy $SOMETHING</span></a>
       <a class="btn btn--ghost btn--lg" href="#lore" data-magnetic><span>Read the Lore</span></a>
     </div>
 
     <div class="ca reveal">
       <div class="ca__label">Contract Address</div>
       <button class="ca__value" type="button" data-copy title="Copy contract address">
-        <span data-ca>coming soon</span>
+        <span data-ca>0x59da048bbfcefb98609d588dbf4fa64d171acfd6</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4M5 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/></svg>
       </button>
     </div>
@@ -318,8 +328,8 @@
       </li>
       <li class="step reveal">
         <span class="step__n">03</span>
-        <h3>wait for the contract</h3>
-        <p>The address is not published yet. When it goes live it appears in the box below and on X at the same moment — nowhere else. Treat anything posted before that as a fake.</p>
+        <h3>copy the contract</h3>
+        <p>Take the address from the box below. This page and the X account are the only places it comes from — treat one posted anywhere else as a fake, and check it character by character against this one.</p>
       </li>
       <li class="step reveal">
         <span class="step__n">04</span>
@@ -331,15 +341,15 @@
     <div class="ca ca--wide reveal">
       <div class="ca__label">Contract Address</div>
       <button class="ca__value" type="button" data-copy title="Copy contract address">
-        <span data-ca>coming soon</span>
+        <span data-ca>0x59da048bbfcefb98609d588dbf4fa64d171acfd6</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4M5 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/></svg>
       </button>
     </div>
 
     <div class="buy__go reveal">
-      <a class="btn btn--solid btn--lg buy-link" href="https://www.ponsfamily.com/launchpad/0x12f1e28cf3fe0c4c022b664e8a413f46f75fe8a0" target="_blank" rel="noopener" data-magnetic><span>Buy $SOMETHING</span></a>
-      <a class="btn btn--ghost btn--lg x-link" href="https://x.com/somethingonhood" target="_blank" rel="noopener" data-magnetic><span>Follow on X</span></a>
-      <span class="buy__note">The contract will be announced there first</span>
+      <a class="btn btn--solid btn--lg buy-link" href="https://www.ponsfamily.com/launchpad/0x59da048bbfcefb98609d588dbf4fa64d171acfd6" target="_blank" rel="noopener" data-magnetic><span>Buy $SOMETHING</span></a>
+      <a class="btn btn--ghost btn--lg x-link" href="https://x.com/somethingonhood" target="_blank" rel="noopener" data-magnetic><span>Verify on X</span></a>
+      <span class="buy__note">The same address is pinned on the account</span>
     </div>
   </div>
 </section>
@@ -360,7 +370,7 @@
       </div>
       <div class="acc__item reveal">
         <button class="acc__q" type="button" aria-expanded="false"><span>is the contract live?</span><i></i></button>
-        <div class="acc__a"><p>Not yet. The address will appear in the contract box on this page and on X at the same time. Those are the only two sources — treat an address posted anywhere else as a scam, and check every character before you swap.</p></div>
+        <div class="acc__a"><p>Yes — it is in the contract box on this page and pinned on the X account. Those are the only two sources, so treat an address posted anywhere else as a scam and check every character before you swap.</p></div>
       </div>
       <div class="acc__item reveal">
         <button class="acc__q" type="button" aria-expanded="false"><span>is the team associated with jackson palmer or dogecoin?</span><i></i></button>
@@ -372,7 +382,7 @@
       </div>
       <div class="acc__item reveal">
         <button class="acc__q" type="button" aria-expanded="false"><span>where can i trade it?</span><i></i></button>
-        <div class="acc__a"><p>Once it is live, wherever $SOMETHING trades on Robinhood. Always paste the contract address from this page instead of searching by name — names can be copied, the address cannot.</p></div>
+        <div class="acc__a"><p>Wherever $SOMETHING trades on Robinhood, or straight from the Buy button. Always paste the contract address from this page instead of searching by name — names can be copied, the address cannot.</p></div>
       </div>
       <div class="acc__item reveal">
         <button class="acc__q" type="button" aria-expanded="false"><span>is this an investment?</span><i></i></button>

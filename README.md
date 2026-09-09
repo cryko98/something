@@ -34,8 +34,8 @@ Everything editable lives at the top of **`main.js`**:
 ```js
 const CONFIG = {
   X_URL: "https://x.com/somethingonhood",
-  BUY_URL: "https://www.ponsfamily.com/launchpad/0x12f1e2…8a0",
-  CONTRACT: ""        // mint address — empty: both boxes read "coming soon"
+  BUY_URL: "https://www.ponsfamily.com/launchpad/0x59da04…cfd6",
+  CONTRACT: "0x59da048bbfcefb98609d588dbf4fa64d171acfd6"
 };
 ```
 
