@@ -26,7 +26,10 @@
 <link rel="stylesheet" href="styles.css" />
 
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
 </script>
 </head>
 <body>
@@ -127,7 +130,7 @@
   <!-- 3D COIN -->
   <div class="coin3d" id="coin3d">
     <canvas id="coinCanvas"></canvas>
-    <div class="coin3d__fallback" id="coinFallback"><span>something.</span></div>
+    <div class="coin3d__fallback" id="coinFallback"><img src="logo3.jpg" alt="Something Coin" /></div>
     <div class="coin3d__hint" id="coinHint"><span>Drag to spin</span></div>
     <svg class="coin3d__orbit" viewBox="0 0 400 400" aria-hidden="true">
       <defs><path id="orbitPath" d="M200,46 a154,154 0 1,1 -0.1,0" /></defs>

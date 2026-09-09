@@ -8,11 +8,11 @@ index.html      markup
 styles.css      the acid/ink design system
 main.js         intro, cursor, reveals, counters, copy, FAQ, video facade
 coin.js         three.js 3D coin (drag to spin) with a CSS fallback
-newlogo.jpg     source logo — acid disc, white $
-favicon.png     the logo clipped to a transparent circle (256px)
-icon-512.png    same, 512px, used as the apple-touch-icon
+logo3.jpg       source logo — green field, cream ring, extruded S
+favicon.png     the logo, squared off (128px)
+icon-192.png    same, 192px, used as the apple-touch-icon
 og.png          1200x630 social card
-logo.jpg        the previous black/white logo, kept for reference
+logo.jpg, logo2.jpg, newlogo.jpg   earlier marks, kept for reference
 ```
 
 ## Design
@@ -63,11 +63,16 @@ block; reduced-motion visitors get the finished word and a quick cut.
 
 ## The 3D coin
 
-`coin.js` builds a cylinder in three.js (loaded from jsDelivr via an import map),
-draws the wordmark onto both faces on a canvas, and gives the edge a reeded bump
-map. Drag to spin, release for inertia, click for a flick, double-click for a
-hard spin; it settles back to a slow idle rotation. If WebGL or the CDN is
-unavailable it falls back to a flat rotating disc.
+`coin.js` strikes `logo3.jpg` as an actual coin in three.js (loaded from jsDelivr
+via an import map): a green blank in the logo's own `#bad621`, a cream torus for
+the ring, and a real extruded **S** standing proud of each face, built with
+`TextGeometry` from Helvetiker Bold. Proportions come off the logo, where the
+ring spans 72% of the square. The edge carries a reeded bump map.
+
+Drag to spin, release for inertia, click for a flick, double-click for a hard
+spin; it settles back to a slow idle rotation. The letter is loaded after the
+coin is already on screen, so a slow font fetch costs the rest nothing, and if
+WebGL or the CDN is unavailable the whole thing falls back to the flat logo.
 
 ## Local preview
 

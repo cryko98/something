@@ -1,7 +1,8 @@
 /* ============================================================
    SOMETHING COIN — coin.js
-   A real 3D coin: polished acid metal, black wordmark, drag to spin.
-   Falls back to a flat CSS coin if WebGL / three.js is absent.
+   The logo struck as a real coin: green blank, cream ring, and
+   an extruded cream S standing proud of the face. Drag to spin.
+   Falls back to the flat logo if WebGL / three.js is absent.
    ============================================================ */
 
 const mount = document.getElementById("coin3d");
@@ -20,10 +21,10 @@ if (mount && canvas) {
 
 function boot(THREE) {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ACID_HEX = 0xc0f913;
-  const FACE_GREEN = "#b4ee0a";   // a shade under the page, so the coin separates
-  const WORD = "something.";
-  const FACE_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+
+  // sampled straight out of logo3.jpg
+  const GREEN = 0xbad621;
+  const CREAM = 0xfffcf0;
 
   /* ---------- renderer ---------- */
   const renderer = new THREE.WebGLRenderer({
@@ -34,36 +35,35 @@ function boot(THREE) {
   });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.95;
+  renderer.toneMappingExposure = 0.88;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
   camera.position.set(0, 0, 4.35);
 
-  /* ---------- studio environment (monochrome) ---------- */
+  /* ---------- environment ----------
+     The logo is a matte illustration, so this is a soft, evenly lit box
+     rather than a studio: a hard falloff would shade the green into olive
+     and lose the flatness the mark depends on. */
   const env = (() => {
     const c = document.createElement("canvas");
     c.width = 512; c.height = 256;
     const x = c.getContext("2d");
-    // the lower half is a green bounce, not black — the coin sits on an acid
-    // page, and a black floor turned the metal rim muddy along its bottom edge
     const g = x.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0.00, "#ffffff");
-    g.addColorStop(0.35, "#c8c8c8");
-    g.addColorStop(0.52, "#7d8a3c");
-    g.addColorStop(1.00, "#54710c");
+    g.addColorStop(0.00, "#f2f2f2");
+    g.addColorStop(0.45, "#c4c4c4");
+    g.addColorStop(0.75, "#a8b47a");
+    g.addColorStop(1.00, "#8a9a50");
     x.fillStyle = g; x.fillRect(0, 0, 512, 256);
-    // soft key + rim highlights so the black body catches light
     const blob = (cx, cy, r, a) => {
       const rg = x.createRadialGradient(cx, cy, 0, cx, cy, r);
       rg.addColorStop(0, `rgba(255,255,255,${a})`);
       rg.addColorStop(1, "rgba(255,255,255,0)");
       x.fillStyle = rg; x.fillRect(cx - r, cy - r, r * 2, r * 2);
     };
-    blob(120, 60, 130, 1);
-    blob(400, 96, 90, .8);
-    blob(260, 210, 150, .16);
+    blob(150, 70, 150, .55);
+    blob(390, 110, 110, .3);
     const tex = new THREE.CanvasTexture(c);
     tex.mapping = THREE.EquirectangularReflectionMapping;
     tex.colorSpace = THREE.SRGBColorSpace;
@@ -73,43 +73,6 @@ function boot(THREE) {
     return rt.texture;
   })();
   scene.environment = env;
-
-  /* ---------- face texture ---------- */
-  // The mark struck into the inset face: acid field, black wordmark.
-  // Both faces use it as-is — turning the back disc 180° about Y already
-  // brings its local +x back around to world +x once the coin is flipped.
-  function faceTexture() {
-    const S = 1024;
-    const c = document.createElement("canvas");
-    c.width = c.height = S;
-    const x = c.getContext("2d");
-
-    const tex = new THREE.CanvasTexture(c);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-    const draw = () => {
-      x.fillStyle = FACE_GREEN;
-      x.fillRect(0, 0, S, S);
-
-      x.fillStyle = "#000";
-      x.textAlign = "center";
-      x.textBaseline = "middle";
-      // fit the word to ~76% of the disc so it clears the bezel on both sides
-      let size = 170;
-      x.font = `700 ${size}px ${FACE_FONT}`;
-      size = Math.round(size * (S * 0.76) / x.measureText(WORD).width);
-      x.font = `700 ${size}px ${FACE_FONT}`;
-      x.fillText(WORD, S / 2, S / 2);
-
-      tex.needsUpdate = true;
-    };
-
-    draw();
-    // redraw once webfonts settle, in case the stack fell back while loading
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
-    return tex;
-  }
 
   /* ---------- reeded edge ---------- */
   const edgeBump = (() => {
@@ -121,74 +84,67 @@ function boot(THREE) {
     for (let i = 0; i < 512; i += 8) x.fillRect(i, 0, 4, 8);
     const t = new THREE.CanvasTexture(c);
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(1, 1);
     return t;
   })();
 
-  /* ---------- coin ----------
-     A polished acid-metal blank with the faces inset slightly, so the ring
-     left over between the disc and the edge reads as a raised bezel. */
-  const R = 1, H = 0.19, FACE_R = 0.87;
-  const geo = new THREE.CylinderGeometry(R, R, H, 160, 1, false);
-  geo.rotateX(Math.PI / 2);                 // faces look at the camera
+  /* ---------- materials ---------- */
+  const greenMat = new THREE.MeshPhysicalMaterial({
+    color: GREEN,
+    metalness: 0,
+    roughness: 0.62,
+    clearcoat: 0.25,
+    clearcoatRoughness: 0.4,
+    envMapIntensity: 0.4
+  });
 
-  // the milled edge
   const edgeMat = new THREE.MeshPhysicalMaterial({
-    color: ACID_HEX,
-    metalness: 1,
-    roughness: 0.34,
-    clearcoat: 1,
-    clearcoatRoughness: 0.22,
+    color: GREEN,
+    metalness: 0,
+    roughness: 0.5,
+    clearcoat: 0.4,
+    clearcoatRoughness: 0.35,
     bumpMap: edgeBump,
-    bumpScale: 0.016,
-    envMapIntensity: 1.5
+    bumpScale: 0.014,
+    envMapIntensity: 0.45
   });
 
-  // the bezel ring: the most polished surface on the coin, so it throws the
-  // hard highlights that separate it from the page behind
-  const bezelMat = new THREE.MeshPhysicalMaterial({
-    color: ACID_HEX,
-    metalness: 1,
-    roughness: 0.1,
-    clearcoat: 1,
-    clearcoatRoughness: 0.04,
-    envMapIntensity: 1.35
+  const creamMat = new THREE.MeshPhysicalMaterial({
+    color: CREAM,
+    metalness: 0,
+    roughness: 0.55,
+    clearcoat: 0.3,
+    clearcoatRoughness: 0.35,
+    envMapIntensity: 0.38
   });
 
-  // CylinderGeometry material order: [side, top, bottom]
-  const blank = new THREE.Mesh(geo, [edgeMat, bezelMat, bezelMat]);
-
-  // the flat struck faces, sunk just below the bezel
-  const faceGeo = new THREE.CircleGeometry(FACE_R, 128);
-  // Mostly self-lit. A purely diffuse face went olive wherever the studio
-  // fell off, and the brand green has to hold across the whole disc; the
-  // emissive map carries the colour, the thin clearcoat keeps it from
-  // looking like flat vector art.
-  const faceMat = () => {
-    const tex = faceTexture();
-    return new THREE.MeshPhysicalMaterial({
-      color: 0x000000,        // kill diffuse entirely...
-      emissive: 0xffffff,     // ...so the emissive map alone sets the colour
-      emissiveMap: tex,
-      emissiveIntensity: 1,
-      metalness: 0,
-      roughness: 0.62,
-      clearcoat: 0.12,        // any more and the sheen greys out the wordmark
-      clearcoatRoughness: 0.36,
-      envMapIntensity: 0.05
-    });
-  };
-
-  // sat just proud of the cap: what is left of the cap outside FACE_R is the bezel
-  const front = new THREE.Mesh(faceGeo, faceMat());
-  front.position.z = H / 2 + 0.002;
-
-  const back = new THREE.Mesh(faceGeo, faceMat());
-  back.position.z = -(H / 2 + 0.002);
-  back.rotation.y = Math.PI;
+  /* ---------- the blank ---------- */
+  const R = 1, H = 0.2;
+  const blankGeo = new THREE.CylinderGeometry(R, R, H, 160, 1, false);
+  blankGeo.rotateX(Math.PI / 2);            // faces look at the camera
+  const blank = new THREE.Mesh(blankGeo, [edgeMat, greenMat, greenMat]);
 
   const coin = new THREE.Group();
-  coin.add(blank, front, back);
+  coin.add(blank);
+
+  /* ---------- one face: the ring, and the letter that goes in it ----------
+     Proportions come off the logo, where the ring spans 72% of the square. */
+  const RING_R = 0.72, RING_TUBE = 0.022, LETTER_H = 0.8, RELIEF = 0.075;
+
+  const faces = [];
+  for (const sign of [1, -1]) {
+    const face = new THREE.Group();
+
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(RING_R, RING_TUBE, 20, 180),
+      creamMat
+    );
+    ring.position.z = H / 2 - RING_TUBE * 0.35;   // sunk a touch into the face
+    face.add(ring);
+
+    face.rotation.y = sign > 0 ? 0 : Math.PI;
+    coin.add(face);
+    faces.push(face);
+  }
 
   const group = new THREE.Group();
   group.add(coin);
@@ -196,28 +152,67 @@ function boot(THREE) {
   scene.add(group);
   window.__coin = group;
 
-  /* ---------- lights ----------
-     Kept low: the metal rim takes its brightness from the environment map,
-     while these would land on the diffuse face and bleach the green. */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  /* ---------- the extruded S ----------
+     Loaded after the coin is already on screen, so a slow or blocked font
+     fetch costs the ring and the blank nothing. */
+  (async () => {
+    const [{ FontLoader }, { TextGeometry }] = await Promise.all([
+      import("three/addons/loaders/FontLoader.js"),
+      import("three/addons/geometries/TextGeometry.js")
+    ]);
+    const font = await new FontLoader().loadAsync(
+      "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json"
+    );
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.3);
-  key.position.set(-2.4, 3.0, 3.2);
+    const geo = new TextGeometry("S", {
+      font,
+      size: 1,
+      height: RELIEF,
+      curveSegments: 24,
+      bevelEnabled: true,
+      bevelThickness: 0.012,
+      bevelSize: 0.008,
+      bevelSegments: 4
+    });
+    geo.computeBoundingBox();
+    const bb = geo.boundingBox;
+    const scale = LETTER_H / (bb.max.y - bb.min.y);
+    geo.scale(scale, scale, 1);
+    geo.computeBoundingBox();
+    // centre it on the face; the extrusion runs from z=0 outward
+    geo.translate(
+      -(geo.boundingBox.max.x + geo.boundingBox.min.x) / 2,
+      -(geo.boundingBox.max.y + geo.boundingBox.min.y) / 2,
+      0
+    );
+
+    for (const face of faces) {
+      const s = new THREE.Mesh(geo, creamMat);
+      s.position.z = H / 2 - 0.004;
+      face.add(s);
+    }
+  })().catch(err => console.warn("[coin] letter unavailable:", err));
+
+  /* ---------- lights ---------- */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+
+  const key = new THREE.DirectionalLight(0xffffff, 1.05);
+  key.position.set(2.6, 3.0, 3.0);          // upper right, as in the logo
   scene.add(key);
 
-  const rim = new THREE.DirectionalLight(0xffffff, 1.4);
-  rim.position.set(3.0, -1.4, -2.2);
-  scene.add(rim);
-
-  const fill = new THREE.DirectionalLight(0xffffff, 0.45);
-  fill.position.set(2.2, 1.2, 2.4);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+  fill.position.set(-2.6, -1.0, 2.4);
   scene.add(fill);
 
+  const rim = new THREE.DirectionalLight(0xffffff, 0.45);
+  rim.position.set(-1.6, 1.4, -2.6);
+  scene.add(rim);
+
   /* ---------- interaction ---------- */
-  let velY = reduced ? 0 : 0.0042;
-  let velX = 0;
-  let dragging = false, lastX = 0, lastY = 0, moved = 0;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const IDLE = reduced ? 0 : 0.0042;
+  let velY = IDLE, velX = 0;
+  let dragging = false, lastX = 0, lastY = 0, moved = 0;
 
   const down = (e) => {
     dragging = true; moved = 0;
@@ -248,7 +243,6 @@ function boot(THREE) {
   addEventListener("pointercancel", up);
   canvas.addEventListener("dblclick", () => { velY += 0.85; });
 
-  // subtle look-at drift when the pointer is elsewhere on the page
   let px = 0, py = 0;
   if (!reduced) {
     addEventListener("pointermove", (e) => {
@@ -256,8 +250,6 @@ function boot(THREE) {
       py = (e.clientY / innerHeight - 0.5) * 2;
     }, { passive: true });
   }
-
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------- resize ---------- */
   function resize() {
@@ -286,7 +278,6 @@ function boot(THREE) {
       group.rotation.x = clamp(group.rotation.x + velX * dt, -1.15, 1.15);
       velY += (IDLE - velY) * 0.012 * dt;    // settle back to the idle spin
       velX *= Math.pow(0.94, dt);
-      // ease the tilt toward the pointer
       const targetX = -0.14 + py * 0.16;
       group.rotation.x += (targetX - group.rotation.x) * 0.02 * dt;
       group.position.x += (px * 0.06 - group.position.x) * 0.03 * dt;
@@ -297,6 +288,5 @@ function boot(THREE) {
   }
   requestAnimationFrame(frame);
 
-  // hide the hint once the user has clearly interacted
   setTimeout(() => hint && (hint.style.opacity = ""), 100);
 }
